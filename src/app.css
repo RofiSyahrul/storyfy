@@ -28,6 +28,8 @@
   --shadow-xl: var(--ring-offset-shadow), var(--ring-shadow),
     0 20px 25px -5px var(--shadow-color-10), 0 8px 10px -6px var(--shadow-color-10);
 
+  --header-height: 56px;
+
   font-family: var(--font-family);
 }
 
@@ -107,7 +109,10 @@ button {
   font-family: inherit;
 }
 
-button {
+button,
+.btn {
+  display: flex;
+  align-items: center;
   min-height: 40px;
   padding: 8px;
   cursor: pointer;
@@ -121,12 +126,23 @@ button {
   font-weight: 600;
 }
 
-button:disabled {
+button:disabled,
+.btn:disabled {
   cursor: not-allowed;
   filter: opacity(30%);
 }
 
-button:focus:not(:focus-visible) {
+button:hover,
+.btn:hover {
+  filter: brightness(80%);
+}
+
+a.btn:hover {
+  text-decoration: none;
+}
+
+button:focus:not(:focus-visible),
+.btn:focus:not(:focus-visible) {
   outline: none;
 }
 
@@ -155,7 +171,13 @@ button:hover:not(:disabled),
   filter: brightness(80%);
 }
 
-@media (min-width: 720px) {
+@media (min-width: 768px) {
+  :root,
+  ::before,
+  ::after {
+    --header-height: 64px;
+  }
+
   h1 {
     font-size: 2.4rem;
   }
