@@ -1,7 +1,7 @@
 import { DEFAULT_DESC, DEFAULT_IMAGE, DEFAULT_KEYWORD, DEFAULT_TITLE } from '$lib/constants/seo';
 import type { LayoutServerLoad } from './$types';
 
-export const load: LayoutServerLoad = async () => {
+export const load: LayoutServerLoad = async ({ locals }) => {
   return {
     seo: {
       description: DEFAULT_DESC,
@@ -10,5 +10,6 @@ export const load: LayoutServerLoad = async () => {
       shouldBlockSearchIndex: false,
       title: DEFAULT_TITLE,
     },
+    userProfile: locals.userProfile,
   };
 };

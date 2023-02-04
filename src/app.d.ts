@@ -1,4 +1,7 @@
 // See https://kit.svelte.dev/docs/types#app
+
+import type { SpotifyUserProfile } from '$lib/types/spotify';
+
 // for information about these interfaces
 declare global {
   namespace App {
@@ -12,7 +15,9 @@ declare global {
 
     // interface Error {}
 
-    // interface Locals {}
+    interface Locals {
+      userProfile: SpotifyUserProfile | null;
+    }
 
     interface PageData {
       seo: SEOMeta;

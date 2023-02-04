@@ -48,5 +48,16 @@ module.exports = {
     ],
     'import/prefer-default-export': 0,
     'no-console': 'error',
+    'no-restricted-imports': [
+      'error',
+      {
+        paths: [
+          {
+            name: '$lib/server/spotify/**',
+            message: 'Could only import $lib/server/spotify',
+          },
+        ],
+      },
+    ],
   },
 };

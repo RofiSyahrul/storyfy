@@ -12,6 +12,7 @@
   },
   "scripts": {
     "build": "vite build",
+    "build:local": "SPOTIFY_REDIRECT_URI=\"http://localhost:4567/callback\" pnpm build",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "dev": "vite dev --port 7654",
@@ -19,6 +20,7 @@
     "lint": "prettier --plugin-search-dir . --check . && eslint .",
     "prepare": "husky install",
     "preview": "vite preview",
+    "preview:local": "SPOTIFY_REDIRECT_URI=\"http://localhost:4567/callback\" pnpm preview --port 4567",
     "pre-commit": "lint-staged && pnpm test",
     "release": "standard-version",
     "test": "vitest run",
