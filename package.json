@@ -11,15 +11,13 @@
     "url": "https://github.com/RofiSyahrul/storyfy.git"
   },
   "scripts": {
-    "build": "vite build",
+    "build": "pnpm check && vite build",
     "build:local": "SPOTIFY_REDIRECT_URI=\"http://localhost:4567/callback\" pnpm build",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-    "dev": "vite dev --port 7654",
+    "dev": "pnpm check && vite dev --port 7654",
     "format": "prettier --plugin-search-dir . --write .",
     "lint": "prettier --plugin-search-dir . --check . && eslint .",
-    "prebuild": "pnpm check",
-    "predev": "pnpm check",
     "prepare": "husky install",
     "preview": "vite preview",
     "preview:local": "SPOTIFY_REDIRECT_URI=\"http://localhost:4567/callback\" pnpm preview --port 4567",
