@@ -18,6 +18,8 @@
     "dev": "vite dev --port 7654",
     "format": "prettier --plugin-search-dir . --write .",
     "lint": "prettier --plugin-search-dir . --check . && eslint .",
+    "prebuild": "pnpm check",
+    "predev": "pnpm check",
     "prepare": "husky install",
     "preview": "vite preview",
     "preview:local": "SPOTIFY_REDIRECT_URI=\"http://localhost:4567/callback\" pnpm preview --port 4567",
