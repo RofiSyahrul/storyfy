@@ -2,6 +2,7 @@
   import Avatar from './$components/Avatar.svelte';
   import Header from './$components/Header.svelte';
   import Highlights from './$components/Highlights.svelte';
+  import NowPlaying from './$components/NowPlaying.svelte';
   import UserInfo from './$components/UserInfo.svelte';
   import type { PageData } from './$types';
 
@@ -19,7 +20,9 @@
       <Avatar slot="avatar" let:alt let:src>
         <img {alt} {src} width="176" height="176" />
       </Avatar>
+      <NowPlaying slot="now-playing" data={data.nowPlaying} />
     </UserInfo>
+    <NowPlaying component="section" data={data.nowPlaying} />
     <Highlights />
   </main>
 {:else}
@@ -41,6 +44,11 @@
   main.logged-in {
     max-width: 1024px;
     margin: 0 auto;
+    --now-playing-display: flex;
+
+    @media (min-width: 640px) {
+      --now-playing-display: none;
+    }
   }
 
   main.non-logged-in {

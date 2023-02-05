@@ -9,9 +9,7 @@
   {/if}
   <div>
     <h2>{name}</h2>
-    {#if $$slots.nowPlaying}
-      <slot name="nowPlaying" />
-    {/if}
+    <slot name="now-playing" />
   </div>
 </section>
 
@@ -21,12 +19,14 @@
     display: flex;
     gap: 16px;
     align-items: center;
+    --now-playing-display: none;
 
     @media (min-width: 640px) {
       align-items: flex-start;
+      --now-playing-display: flex;
     }
 
-    div {
+    > div {
       display: flex;
       flex-direction: column;
       flex: 1;

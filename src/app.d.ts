@@ -1,5 +1,8 @@
 // See https://kit.svelte.dev/docs/types#app
 
+import type { ComponentType, SvelteComponentTyped } from 'svelte';
+import type { SVGAttributes } from 'svelte/elements';
+
 import type { SpotifyUserProfile } from '$lib/types/spotify';
 
 // for information about these interfaces
@@ -24,6 +27,12 @@ declare global {
     }
 
     // interface Platform {}
+  }
+
+  declare module '*.svg?component' {
+    const content: ComponentType<SvelteComponentTyped<SVGAttributes<SVGSVGElement>>>;
+
+    export default content;
   }
 }
 
