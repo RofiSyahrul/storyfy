@@ -1,5 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 
+import { checkAuth } from '$lib/server/middlewares';
 import { getStoriesSession } from '$lib/server/session/stories';
 import { spotifyAPI } from '$lib/server/spotify';
 import {
@@ -11,7 +12,9 @@ import {
 import type { LayoutServerLoadEvent } from './$types';
 import { buildStoryPathname } from './utils';
 
-export async function load({ cookies, url }: LayoutServerLoadEvent) {
+export async function load({ cookies, locals, url }: LayoutServerLoadEvent) {
+  checkAuth({ cookies, locals, url });
+
   const [nowPlaying, recentlyPlayedTracks] = await Promise.all([
     spotifyAPI.fetchNowPlaying(cookies),
     spotifyAPI.fetchRecentlyPlayedTracks(cookies),

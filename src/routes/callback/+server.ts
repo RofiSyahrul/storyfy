@@ -1,6 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 
-import { SPOTIFY_FORBIDDEN } from '$lib/server/cookie-keys';
+import { LOGIN_REDIRECT_URL, SPOTIFY_FORBIDDEN } from '$lib/server/cookie-keys';
 import { spotifyAuth } from '$lib/server/spotify';
 import type { RequestHandler } from './$types';
 
@@ -18,5 +18,12 @@ export const GET: RequestHandler = async ({ cookies, url }) => {
     throw redirect(302, `/?error=${message}`);
   }
 
-  throw redirect(302, '/');
+  let loginRedirectURL = cookies.get(LOGIN_REDIRECT_URL);
+  if (!loginRedirectURL || !loginRedirectURL.startsWith('/')) {
+    loginRedirectURL = '/';
+  } else if (loginRedirectURL) {
+    cookies.delete(LOGIN_REDIRECT_URL);
+  }
+
+  throw redirect(302, loginRedirectURL);
 };
