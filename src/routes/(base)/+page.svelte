@@ -16,10 +16,7 @@
 
 {#if data.userProfile}
   <main class="logged-in">
-    <UserInfo
-      imageSrc={data.userProfile.image?.url}
-      name={data.userProfile.displayName || data.userProfile.id}
-    >
+    <UserInfo imageSrc={data.userProfile.image?.url} name={data.userProfile.displayName}>
       <Avatar slot="avatar" let:alt let:src {hasStories}>
         {#if src}
           <img {alt} {src} width="176" height="176" />

@@ -50,7 +50,7 @@ export interface SpotifyUserProfileResponse {
 }
 
 export interface SpotifyUserProfile {
-  displayName: string | null;
+  displayName: string;
   id: string;
   image: SpotifyImage | null;
 }

@@ -64,7 +64,7 @@ class SpotifyAPI extends Fetcher {
       });
 
       return {
-        displayName: response.display_name,
+        displayName: response.display_name || response.id,
         id: response.id,
         image: response.images[0] ?? null,
       };
