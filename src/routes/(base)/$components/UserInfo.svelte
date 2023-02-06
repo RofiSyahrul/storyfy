@@ -4,9 +4,7 @@
 </script>
 
 <section>
-  {#if imageSrc}
-    <slot name="avatar" alt={name} src={imageSrc} />
-  {/if}
+  <slot name="avatar" alt={name} src={imageSrc} />
   <div>
     <h2>{name}</h2>
     <slot name="now-playing" />

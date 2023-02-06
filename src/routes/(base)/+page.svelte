@@ -1,4 +1,5 @@
 <script lang="ts">
+  import SpotifyIcon from '$lib/icons/spotify.svg?component';
   import Avatar from './$components/Avatar.svelte';
   import Header from './$components/Header.svelte';
   import Highlights from './$components/Highlights.svelte';
@@ -20,7 +21,11 @@
       name={data.userProfile.displayName || data.userProfile.id}
     >
       <Avatar slot="avatar" let:alt let:src {hasStories}>
-        <img {alt} {src} width="176" height="176" />
+        {#if src}
+          <img {alt} {src} width="176" height="176" />
+        {:else}
+          <SpotifyIcon width="176" height="176" />
+        {/if}
       </Avatar>
       <NowPlaying slot="now-playing" data={data.nowPlaying} />
     </UserInfo>
