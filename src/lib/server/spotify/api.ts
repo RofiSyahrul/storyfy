@@ -1,15 +1,30 @@
 import type { Cookies } from '@sveltejs/kit';
+import dayjs from 'dayjs';
 
 import { SPOTIFY_REQUEST_DEBUG } from '$env/static/private';
-import { SPOTIFY_ACCESS_TOKEN, SPOTIFY_REFRESH_TOKEN } from '$lib/constants/cookie-keys';
+import { SPOTIFY_ACCESS_TOKEN, SPOTIFY_REFRESH_TOKEN } from '$lib/server/cookie-keys';
 import type {
   SpotifyNowPlaingResponse,
   SpotifyNowPlayingData,
+  SpotifyRecentlyPlayedItem,
+  SpotifyRecentlyPlayedResponse,
+  SpotifyRecentlyPlayedTrack,
+  SpotifyTrack,
   SpotifyUserProfile,
   SpotifyUserProfileResponse,
 } from '$lib/types/spotify';
 import { spotifyAuth } from './auth';
 import Fetcher from '../fetcher';
+
+function isTrackHasPreview(track: SpotifyTrack): track is SpotifyTrack<string> {
+  return !!track.preview_url;
+}
+
+function isItemHasPreview(
+  item: SpotifyRecentlyPlayedItem,
+): item is SpotifyRecentlyPlayedItem<string> {
+  return isTrackHasPreview(item.track);
+}
 
 class SpotifyAPI extends Fetcher {
   private MAX_RETRY = 3;
@@ -96,6 +111,70 @@ class SpotifyAPI extends Fetcher {
       this.log(`Failed to fetch Spotify now playing data. Error: `, error?.message);
       return null;
     }
+  }
+
+  private async _fetchRecentlyPlayedRawData(
+    cookies: Cookies,
+    retryCount = 0,
+  ): Promise<SpotifyRecentlyPlayedItem<string>[]> {
+    try {
+      const res = await this.fetcher<
+        SpotifyRecentlyPlayedResponse,
+        { after: number; limit: number }
+      >({
+        cookies,
+        path: `/v1/me/player/recently-played`,
+        query: {
+          after: dayjs().subtract(24, 'hours').unix(),
+          limit: 50,
+        },
+      });
+
+      const items: SpotifyRecentlyPlayedItem<string>[] = [];
+      const trackIds: string[] = [];
+      const maxItems = 5;
+
+      for (const item of res.items) {
+        if (items.length >= maxItems) break;
+        if (isItemHasPreview(item) && !trackIds.includes(item.track.id)) {
+          items.push(item);
+          trackIds.push(item.track.id);
+        }
+      }
+
+      return items;
+    } catch (error) {
+      await this.handleError(error, cookies, retryCount);
+      return this._fetchRecentlyPlayedRawData(cookies, retryCount + 1);
+    }
+  }
+
+  private async fetchRecentlyPlayedRawData(cookies: Cookies) {
+    try {
+      return this._fetchRecentlyPlayedRawData(cookies);
+    } catch (error) {
+      this.log(`Failed to fetch Spotify recently played data. Error: `, error?.message);
+      return [];
+    }
+  }
+
+  public async hasRecentlyPlayedTracks(cookies: Cookies) {
+    const items = await this.fetchRecentlyPlayedRawData(cookies);
+    return items.length > 0;
+  }
+
+  public async fetchRecentlyPlayedTracks(cookies: Cookies) {
+    const items = await this.fetchRecentlyPlayedRawData(cookies);
+    return items.reverse().map<SpotifyRecentlyPlayedTrack>((item) => ({
+      albumName: item.track.album.name,
+      artists: item.track.artists.map((artist) => artist.name),
+      id: item.track.id,
+      image: item.track.album.images[0] ?? null,
+      playedAt: item.played_at,
+      previewURL: item.track.preview_url,
+      title: item.track.name,
+      trackURL: item.track.external_urls.spotify,
+    }));
   }
 }
 

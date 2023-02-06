@@ -7,6 +7,8 @@
   import type { PageData } from './$types';
 
   export let data: PageData;
+
+  $: hasStories = Boolean(data.nowPlaying?.previewURL || data.hasRecentlyPlayedTracks);
 </script>
 
 <Header isLoggedIn={!!data.userProfile} />
@@ -17,7 +19,7 @@
       imageSrc={data.userProfile.image?.url}
       name={data.userProfile.displayName || data.userProfile.id}
     >
-      <Avatar slot="avatar" let:alt let:src>
+      <Avatar slot="avatar" let:alt let:src {hasStories}>
         <img {alt} {src} width="176" height="176" />
       </Avatar>
       <NowPlaying slot="now-playing" data={data.nowPlaying} />

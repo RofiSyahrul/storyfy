@@ -8,12 +8,12 @@ import {
   SPOTIFY_REDIRECT_URI,
   SPOTIFY_REQUEST_DEBUG,
 } from '$env/static/private';
+import { ONE_YEAR_IN_SECONDS } from '$lib/constants/times';
 import {
   SPOTIFY_ACCESS_TOKEN,
   SPOTIFY_AUTH_STATE,
   SPOTIFY_REFRESH_TOKEN,
-} from '$lib/constants/cookie-keys';
-import { ONE_YEAR_IN_SECONDS } from '$lib/constants/times';
+} from '$lib/server/cookie-keys';
 import Fetcher from '../fetcher';
 
 class SpotifyAuth extends Fetcher {

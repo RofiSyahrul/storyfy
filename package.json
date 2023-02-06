@@ -16,8 +16,10 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "dev": "pnpm check && vite dev --port 7654",
-    "format": "prettier --plugin-search-dir . --write .",
+    "format": "prettier --plugin-search-dir . --write . && eslint . --fix",
     "lint": "prettier --plugin-search-dir . --check . && eslint .",
+    "lint:fix": "eslint --fix",
+    "lint:fix:all": "eslint . --fix",
     "prepare": "husky install",
     "preview": "vite preview",
     "preview:local": "SPOTIFY_REDIRECT_URI=\"http://localhost:4567/callback\" pnpm preview --port 4567",
@@ -61,5 +63,8 @@
       "prettier --check",
       "eslint"
     ]
+  },
+  "dependencies": {
+    "dayjs": "1.11.7"
   }
 }

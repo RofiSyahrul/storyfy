@@ -1,9 +1,15 @@
 <script lang="ts">
   import '../app.css';
+  import { onMount } from 'svelte';
+
   import { page } from '$app/stores';
+  import { setIsInternalRouting } from '$lib/client/storage/internal-routing';
+  import { initUserProfileStore } from '$lib/store/user-profile';
   import type { LayoutData } from './$types';
 
   export let data: LayoutData;
+
+  initUserProfileStore(data.userProfile);
 
   let description: string,
     image = data.seo.image,
@@ -32,6 +38,13 @@
       keyword = $page.data.seo.keyword;
     }
   }
+
+  onMount(() => {
+    setIsInternalRouting(true);
+    return () => {
+      setIsInternalRouting(false);
+    };
+  });
 </script>
 
 <svelte:head>

@@ -13,13 +13,7 @@
   <div class="title">
     <SpotifyIcon height="24" width="24" />
     <h3>Now Playing</h3>
-    <button
-      on:click={(e) => {
-        e.stopPropagation();
-        invalidateAll();
-      }}
-      title="Refresh"
-    >
+    <button on:click|stopPropagation={invalidateAll} title="Refresh">
       <RefreshIcon />
       <VisuallyHidden>Refresh</VisuallyHidden>
     </button>

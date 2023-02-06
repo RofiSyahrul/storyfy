@@ -1,6 +1,6 @@
 import type { Handle } from '@sveltejs/kit';
 
-import { SPOTIFY_ACCESS_TOKEN } from '$lib/constants/cookie-keys';
+import { SPOTIFY_ACCESS_TOKEN } from '$lib/server/cookie-keys';
 import { spotifyAPI } from '$lib/server/spotify';
 
 export const handle: Handle = async ({ event, resolve }) => {

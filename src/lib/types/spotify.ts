@@ -34,6 +34,11 @@ export interface SpotifyTrack<TPreview = string | null> {
   preview_url: TPreview;
 }
 
+export interface SpotifyRecentlyPlayedItem<TPreview = string | null> {
+  played_at: string;
+  track: SpotifyTrack<TPreview>;
+}
+
 /* END: Entities */
 
 /* START: Responses */
@@ -62,6 +67,21 @@ export interface SpotifyNowPlayingData {
   previewURL: string | null;
   title: string;
   trackID: string;
+  trackURL: string;
+}
+
+export interface SpotifyRecentlyPlayedResponse {
+  items: SpotifyRecentlyPlayedItem[];
+}
+
+export interface SpotifyRecentlyPlayedTrack {
+  albumName: string;
+  artists: string[];
+  id: string;
+  image: SpotifyImage | null;
+  playedAt: string;
+  previewURL: string;
+  title: string;
   trackURL: string;
 }
 

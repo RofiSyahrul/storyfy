@@ -1,6 +1,4 @@
 <script lang="ts">
-  import type { SpotifyUserProfile } from '$lib/types/spotify';
-
   export let isLoggedIn: boolean;
 </script>
 
