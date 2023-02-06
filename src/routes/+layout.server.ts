@@ -10,6 +10,7 @@ const DEFAULT_KEYWORD =
 
 export const load: LayoutServerLoad = async ({ locals }) => {
   return {
+    isForbidden: locals.isForbidden,
     seo: {
       description: DEFAULT_DESC,
       image: DEFAULT_IMAGE,

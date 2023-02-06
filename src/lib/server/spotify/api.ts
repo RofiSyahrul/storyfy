@@ -75,7 +75,7 @@ class SpotifyAPI extends Fetcher {
   }
 
   public async fetchCurrentUserProfile(cookies: Cookies) {
-    return this._fetchCurrentUserProfile(cookies);
+    return await this._fetchCurrentUserProfile(cookies);
   }
 
   private async _fetchNowPlaying(
@@ -117,6 +117,7 @@ class SpotifyAPI extends Fetcher {
     cookies: Cookies,
     retryCount = 0,
   ): Promise<SpotifyRecentlyPlayedItem<string>[]> {
+    if (!this.hasAccessToken(cookies)) return [];
     try {
       const res = await this.fetcher<
         SpotifyRecentlyPlayedResponse,

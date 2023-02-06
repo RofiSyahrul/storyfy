@@ -19,6 +19,7 @@ declare global {
     // interface Error {}
 
     interface Locals {
+      isForbidden: boolean;
       userProfile: SpotifyUserProfile | null;
     }
 

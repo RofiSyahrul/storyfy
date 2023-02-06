@@ -29,8 +29,12 @@
   </main>
 {:else}
   <main class="non-logged-in">
-    <h2>{data.seo.description}</h2>
-    <a href="/login" class="btn" data-sveltekit-preload-data="off"> Login with Spotify </a>
+    {#if data.isForbidden}
+      <h2>Storyfy doesn't have access to your Spotify account</h2>
+    {:else}
+      <h2>{data.seo.description}</h2>
+      <a href="/login" class="btn" data-sveltekit-preload-data="off"> Login with Spotify </a>
+    {/if}
   </main>
 {/if}
 
