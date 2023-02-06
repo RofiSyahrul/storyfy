@@ -106,7 +106,7 @@ class SpotifyAPI extends Fetcher {
 
   public async fetchNowPlaying(cookies: Cookies) {
     try {
-      return this._fetchNowPlaying(cookies);
+      return await this._fetchNowPlaying(cookies);
     } catch (error) {
       this.log(`Failed to fetch Spotify now playing data. Error: `, error?.message);
       return null;
@@ -151,7 +151,7 @@ class SpotifyAPI extends Fetcher {
 
   private async fetchRecentlyPlayedRawData(cookies: Cookies) {
     try {
-      return this._fetchRecentlyPlayedRawData(cookies);
+      return await this._fetchRecentlyPlayedRawData(cookies);
     } catch (error) {
       this.log(`Failed to fetch Spotify recently played data. Error: `, error?.message);
       return [];
