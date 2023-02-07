@@ -9,6 +9,8 @@ import type {
   SpotifyRecentlyPlayedItem,
   SpotifyRecentlyPlayedResponse,
   SpotifyRecentlyPlayedTrack,
+  SpotifyTopTrackItem,
+  SpotifyTopTracksResponse,
   SpotifyTrack,
   SpotifyUserProfile,
   SpotifyUserProfileResponse,
@@ -45,7 +47,18 @@ class SpotifyAPI extends Fetcher {
 
   private async handleError(error: Error, cookies: Cookies, retryCount: number) {
     const { status } = this.parseError(error);
-    if (retryCount < this.MAX_RETRY && status === 401 && cookies.get(SPOTIFY_REFRESH_TOKEN)) {
+    if (status === 401) {
+      if (!cookies.get(SPOTIFY_REFRESH_TOKEN)) {
+        cookies.delete(SPOTIFY_ACCESS_TOKEN);
+        throw error;
+      }
+
+      if (retryCount >= this.MAX_RETRY) {
+        cookies.delete(SPOTIFY_ACCESS_TOKEN);
+        cookies.delete(SPOTIFY_REFRESH_TOKEN);
+        throw error;
+      }
+
       await spotifyAuth.fetchAndSaveCredentials(cookies);
       return;
     }
@@ -175,6 +188,66 @@ class SpotifyAPI extends Fetcher {
       previewURL: item.track.preview_url,
       title: item.track.name,
       trackURL: item.track.external_urls.spotify,
+    }));
+  }
+
+  private async _fetchTopTracksRawData(
+    cookies: Cookies,
+    retryCount: number,
+  ): Promise<SpotifyTrack<string>[]> {
+    if (!this.hasAccessToken(cookies)) return [];
+    try {
+      const res = await this.fetcher<SpotifyTopTracksResponse>({
+        cookies,
+        path: `/v1/me/top/tracks`,
+        query: {
+          limit: 50,
+          time_range: 'short_term',
+        },
+      });
+
+      const topTracks: SpotifyTrack<string>[] = [];
+      const maxTracks = 10;
+
+      for (const track of res.items) {
+        if (topTracks.length >= maxTracks) break;
+        if (isTrackHasPreview(track)) {
+          topTracks.push(track);
+        }
+      }
+
+      return topTracks;
+    } catch (error) {
+      await this.handleError(error, cookies, retryCount);
+      return this._fetchTopTracksRawData(cookies, retryCount + 1);
+    }
+  }
+
+  private async fetchTopTracksRawData(cookies: Cookies) {
+    try {
+      return await this._fetchTopTracksRawData(cookies, 0);
+    } catch (error) {
+      this.log(`Failed to get Spotify top tracks. ${error?.message}`);
+      return [];
+    }
+  }
+
+  public async hasTopTracks(cookies: Cookies) {
+    const topTracks = await this.fetchTopTracksRawData(cookies);
+    return topTracks.length > 0;
+  }
+
+  public async fetchTopTracks(cookies: Cookies) {
+    const rawTopTracks = await this.fetchTopTracksRawData(cookies);
+    return rawTopTracks.map<SpotifyTopTrackItem>((track, index) => ({
+      albumName: track.album.name,
+      artists: track.artists.map((artist) => artist.name),
+      id: track.id,
+      image: track.album.images[0] ?? null,
+      previewURL: track.preview_url,
+      rank: index + 1,
+      title: track.name,
+      trackURL: track.external_urls.spotify,
     }));
   }
 }

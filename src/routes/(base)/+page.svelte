@@ -1,5 +1,6 @@
 <script lang="ts">
-  import SpotifyIcon from '$lib/icons/spotify.svg?component';
+  import StorifyIcon from '$lib/icons/storyfy.svg?component';
+  import { HIGHLIGHT_TOP_TRACKS, type HighlightName } from '$lib/types/highlights';
   import Avatar from './$components/Avatar.svelte';
   import Header from './$components/Header.svelte';
   import Highlights from './$components/Highlights.svelte';
@@ -10,6 +11,13 @@
   export let data: PageData;
 
   $: hasStories = Boolean(data.nowPlaying?.previewURL || data.hasRecentlyPlayedTracks);
+
+  let highlightNames: HighlightName[] = [];
+  $: {
+    if (data.hasTopTracks) {
+      highlightNames = highlightNames.concat(HIGHLIGHT_TOP_TRACKS);
+    }
+  }
 </script>
 
 <Header isLoggedIn={!!data.userProfile} />
@@ -21,13 +29,16 @@
         {#if src}
           <img {alt} {src} width="176" height="176" />
         {:else}
-          <SpotifyIcon width="176" height="176" />
+          <StorifyIcon width="176" height="176" />
         {/if}
       </Avatar>
       <NowPlaying slot="now-playing" data={data.nowPlaying} />
     </UserInfo>
     <NowPlaying component="section" data={data.nowPlaying} />
-    <Highlights />
+
+    {#if highlightNames.length}
+      <Highlights {highlightNames} />
+    {/if}
   </main>
 {:else}
   <main class="non-logged-in">
@@ -54,7 +65,7 @@
     margin: 0 auto;
     --now-playing-display: flex;
 
-    @media (min-width: 640px) {
+    @include sm {
       --now-playing-display: none;
     }
   }

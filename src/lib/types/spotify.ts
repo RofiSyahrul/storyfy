@@ -85,4 +85,12 @@ export interface SpotifyRecentlyPlayedTrack {
   trackURL: string;
 }
 
+export interface SpotifyTopTracksResponse {
+  items: SpotifyTrack[];
+}
+
+export interface SpotifyTopTrackItem extends Omit<SpotifyRecentlyPlayedTrack, 'playedAt'> {
+  rank: number;
+}
+
 /* END: Responses */
