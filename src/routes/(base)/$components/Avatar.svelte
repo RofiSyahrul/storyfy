@@ -49,5 +49,8 @@
   a.avatar {
     border-style: solid;
     border-color: var(--color-primary);
+    &:hover {
+      filter: brightness(80%);
+    }
   }
 </style>

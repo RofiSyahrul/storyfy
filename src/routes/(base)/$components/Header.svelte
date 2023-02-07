@@ -1,10 +1,13 @@
 <script lang="ts">
+  import StoryfyIcon from '$lib/icons/storyfy.svg?component';
+
   export let isLoggedIn: boolean;
 </script>
 
 <header>
   <div class="fixed">
     <div class="inner">
+      <StoryfyIcon width="56" height="56" />
       <h1>Storyfy</h1>
       {#if isLoggedIn}
         <form action="/logout" method="post">
@@ -42,8 +45,14 @@
     margin: 0 auto;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: 8px;
+
+    :global(svg) {
+      width: auto;
+      height: 80%;
+      aspect-ratio: 1 / 1;
+      border-radius: 50%;
+    }
   }
 
   header,
@@ -54,6 +63,8 @@
   h1 {
     font-weight: bold;
     margin: 0;
+    flex: 1;
+    text-align: left;
   }
 
   form {
