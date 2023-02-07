@@ -119,10 +119,12 @@
 
   header {
     position: absolute;
-    top: 8px;
+    top: 0;
     left: 0;
     width: 100%;
     z-index: 10;
+    padding-top: 8px;
+    background-color: var(--color-bg-body);
   }
 
   .progresses {
@@ -163,7 +165,8 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 48px 16px;
+    padding: 72px 16px 48px;
+    overflow: hidden;
 
     :global(button.hidden) {
       position: absolute;

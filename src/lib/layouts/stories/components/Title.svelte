@@ -2,7 +2,7 @@
   import dayjs from 'dayjs';
 
   import { ONE_HOUR_IN_MINUTES } from '$lib/constants/times';
-  import SpotifyIcon from '$lib/icons/spotify.svg?component';
+  import StoryfyIcon from '$lib/icons/storyfy.svg?component';
   import { getActiveStoryStore } from '$lib/store/stories';
   import { userProfile } from '$lib/store/user-profile';
 
@@ -27,40 +27,69 @@
   const activeStoryStore = getActiveStoryStore();
 
   $: ({ activeStory } = $activeStoryStore);
+  $: userImageSrc = $userProfile?.image?.url;
+  $: userName = $userProfile?.displayName;
 </script>
 
-<div>
-  {#if $userProfile?.image?.url}
-    <img alt={$userProfile.id} src={$userProfile.image.url} width="32px" height="32px" />
+<div class="container">
+  {#if userImageSrc}
+    <img alt={userName} src={userImageSrc} width="48px" height="48px" />
   {:else}
-    <SpotifyIcon width="32" height="32" />
+    <StoryfyIcon width="48" height="48" />
   {/if}
 
-  <h1>{activeStory.title}</h1>
+  <div>
+    {#if userName}
+      <h1>{userName}</h1>
+    {/if}
 
-  {#if activeStory.timestamp}
-    <span class="time-diff">
-      {getTimeDiff(activeStory.timestamp)}
-    </span>
-  {/if}
+    <div>
+      <svelte:element this={userName ? 'h2' : 'h1'}>
+        {activeStory.title}
+      </svelte:element>
+
+      {#if activeStory.timestamp}
+        <span class="time-diff">
+          {getTimeDiff(activeStory.timestamp)}
+        </span>
+      {/if}
+    </div>
+  </div>
 </div>
 
 <style lang="scss">
+  .container {
+    > div {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      align-items: flex-start;
+    }
+  }
+
   img {
     object-fit: contain;
     border-radius: 50%;
   }
 
-  h1 {
+  h1,
+  h2 {
     margin: 0;
     font-weight: 600;
     font-size: 16px;
-    line-height: 24px;
+    line-height: 20px;
+    display: inline;
+    text-align: left;
+  }
+
+  h1 {
+    color: var(--color-text-subtle);
   }
 
   .time-diff {
     font-size: 16px;
     line-height: 24px;
     color: var(--color-text-subtle);
+    margin-left: 2px;
   }
 </style>
