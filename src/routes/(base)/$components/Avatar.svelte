@@ -22,12 +22,12 @@
     border-radius: 50%;
     border-width: 2px;
 
-    @media (min-width: 640px) {
+    @include sm {
       width: 128px;
       height: 128px;
     }
 
-    @media (min-width: 768px) {
+    @include md {
       width: 176px;
       height: 176px;
     }

@@ -30,7 +30,8 @@
     box-shadow: var(--shadow-md);
     padding: 0 8px;
     background-color: var(--color-bg-body);
-    @media (min-width: 640px) {
+
+    @include sm {
       padding: 0 12px;
     }
   }

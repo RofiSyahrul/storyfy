@@ -19,7 +19,7 @@
     align-items: center;
     --now-playing-display: none;
 
-    @media (min-width: 640px) {
+    @include sm {
       align-items: flex-start;
       --now-playing-display: flex;
     }
@@ -36,7 +36,7 @@
         font-size: 24px;
         line-height: 32px;
 
-        @media (min-width: 640px) {
+        @include sm {
           font-size: 30px;
           line-height: 36px;
         }

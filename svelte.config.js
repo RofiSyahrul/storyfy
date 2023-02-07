@@ -10,6 +10,15 @@ const config = {
     postcss: {
       plugins: [autoprefixer()],
     },
+    scss: {
+      prependData: `@import '$MIXINS';`,
+      importer(url, prev) {
+        if (url === '$MIXINS') {
+          return { file: './src/styles/mixins.scss' };
+        }
+        return { file: prev };
+      },
+    },
   }),
 
   kit: {

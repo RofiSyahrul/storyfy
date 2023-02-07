@@ -46,7 +46,7 @@
     border: 1px solid var(--color-border);
     padding: 8px;
 
-    @media (min-width: 1024px) {
+    @include lg {
       padding: 12px;
     }
 
@@ -77,7 +77,7 @@
       font-size: 16px;
       line-height: 24px;
 
-      @media (min-width: 1024px) {
+      @include lg {
         gap: 12px;
       }
 
