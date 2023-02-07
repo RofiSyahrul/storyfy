@@ -62,6 +62,7 @@
     font-size: 36px;
     line-height: 40px;
     text-align: center;
+    z-index: 10;
   }
 
   p {
