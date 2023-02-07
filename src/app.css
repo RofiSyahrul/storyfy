@@ -4,15 +4,20 @@
   --font-family: -apple-system, system-ui, sans-serif, 'Segoe UI', Helvetica Neue, Helvetica, Roboto,
     Arial, 'Apple Color Emoji', 'Segoe UI Emoji';
 
+  --color-logo: #016237;
+
   --color-bg-body: #101828;
   --color-bg-subtle: #475467;
   --color-text-body: #fcfcfd;
   --color-text-subtle: #98a2b3;
   --color-text-inverse: var(--color-bg-body);
 
-  --color-primary: #a6f4c5;
+  --color-primary: #33815f;
   --color-secondary: #b2ddff;
   --color-danger: #fecdca;
+
+  /* --color-text-primary: #99c0af; */
+  --color-text-primary: #80b09b;
 
   --color-border: #344054;
 
@@ -67,7 +72,7 @@ a {
 }
 
 a {
-  color: var(--color-primary);
+  color: var(--color-text-primary);
   text-decoration: none;
 }
 
@@ -117,7 +122,7 @@ button,
   padding: 8px;
   cursor: pointer;
   background-color: var(--color-primary);
-  color: var(--color-text-inverse);
+  color: var(--color-text-body);
   border-radius: 4px;
   outline: none;
   border: none;
