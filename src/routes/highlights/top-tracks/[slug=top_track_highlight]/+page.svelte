@@ -3,6 +3,7 @@
   import Audio from '$lib/components/Audio.svelte';
   import VisuallyHidden from '$lib/components/VisuallyHidden.svelte';
   import {
+    activeStoryMediaElement,
     getActiveStoryStore,
     goToNextStory,
     handleStoryTimeUpdate,
@@ -18,6 +19,9 @@
 
   $: ({ activeStory, canNext } = $activeStoryStore);
   $: ({ artists, image, previewURL, rank, title, trackURL } = activeStory.detail);
+  $: if (audio) {
+    activeStoryMediaElement.set(audio.getAudioElement());
+  }
 </script>
 
 <div class="rank">
@@ -94,7 +98,7 @@
 
   a {
     font-weight: 700;
-    font-size: 18px;
+    font-size: 24px;
     line-height: 28px;
     text-align: center;
     z-index: 10;

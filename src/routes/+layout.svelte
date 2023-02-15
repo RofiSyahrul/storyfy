@@ -3,6 +3,7 @@
   import { onMount } from 'svelte';
 
   import { page } from '$app/stores';
+  import { createPortal } from '$lib/actions/portal';
   import { setIsInternalRouting } from '$lib/client/storage/internal-routing';
   import { initUserProfileStore } from '$lib/store/user-profile';
   import type { LayoutData } from './$types';
@@ -71,3 +72,5 @@
 </svelte:head>
 
 <slot />
+
+<div use:createPortal />

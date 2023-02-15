@@ -34,6 +34,8 @@ let storiesStore: Writable<GenericStoryItem[]> | undefined;
 let storyProgressStore: Writable<Record<string, number>> | undefined;
 const storyIsMutedStore = writable(isAudioMuted());
 
+export const activeStoryMediaElement = writable<HTMLMediaElement | null>(null);
+
 function throwError(): never {
   throw new Error('stories store has not been initialized');
 }

@@ -1,11 +1,30 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
-  import { noop } from 'svelte/internal';
+  import { noop, onMount } from 'svelte/internal';
   import { fly } from 'svelte/transition';
 
+  import { dev } from '$app/environment';
   import { goto } from '$app/navigation';
   import { goBack } from '$lib/client/go-back';
   import {
+    canRecordMedia,
+    convertWebmToMp4,
+    createCanvas,
+    createFile,
+    downloadBlob,
+    getAudioStream,
+    hasFileReader,
+    hasNativeShare,
+    recordCanvasAndAudioStream,
+  } from '$lib/client/media';
+  import Popup from '$lib/components/Popup.svelte';
+  import Progress from '$lib/components/Progress.svelte';
+  import VisuallyHidden from '$lib/components/VisuallyHidden.svelte';
+  import DownloadIcon from '$lib/icons/download.svg?component';
+  import ShareIcon from '$lib/icons/share.svg?component';
+  import storyfyIconSrc from '$lib/icons/storyfy.svg?src';
+  import {
+    activeStoryMediaElement,
     initStoriesStore,
     updateStories,
     type StoriesCloseHandlerParams,
@@ -15,7 +34,7 @@
   import AudioToggleButton from './components/AudioToggleButton.svelte';
   import CloseButton from './components/CloseButton.svelte';
   import InvisibleNavButtons from './components/InvisibleNavButtons.svelte';
-  import Progress from './components/Progress.svelte';
+  import StoryProgress from './components/StoryProgress.svelte';
   import Title from './components/Title.svelte';
   import { setStoriesContext, type StoriesContext } from './context';
 
@@ -23,14 +42,32 @@
     close: StoriesCloseHandlerParams;
   };
 
+  interface ShareData {
+    files?: File[];
+    text?: string;
+    title?: string;
+    url?: string;
+  }
+
   export let buildStoryPathname: (slug: string) => string;
   export let initialActiveIndex: number;
+  export let isShareable = false;
   export let name: StoriesContext['name'];
   export let stories: GenericStoryItem[];
+
+  let container: HTMLDivElement;
+  let canDownload = false;
+  let canShare = false;
+  let creatingFileProgress: number | null = null;
+  let creatingFileDesc = '';
+  let isFilePopupOpened = false;
+  let sharedData: ShareData | null = null;
+  let sharedFile: File | null = null;
 
   const dispatch = createEventDispatcher<StoriesLayoutEventMap>();
 
   function handleNextAndPrev(story: GenericStoryItem) {
+    sharedFile = null;
     const pathname = buildStoryPathname(story.slug);
     goto(pathname, { replaceState: true });
   }
@@ -49,9 +86,15 @@
 
   const activeStoryStore = getActiveStoryStore();
 
+  onMount(() => {
+    canDownload = canRecordMedia();
+    canShare = canDownload && hasFileReader() && hasNativeShare();
+  });
+
   $: updateStories(stories);
   $: ({ activeIndex, activeStory, prevActiveIndex } = $activeStoryStore);
   $: activeSlug = activeStory.slug;
+  $: isCreatingStoryFile = typeof creatingFileProgress === 'number';
 
   let flyOffsetX = 0;
   const FLY_OFFSET_X = 576;
@@ -60,22 +103,147 @@
   } else if (activeIndex < prevActiveIndex) {
     flyOffsetX = -1 * FLY_OFFSET_X;
   }
+
+  async function createStoryFile() {
+    if (!$activeStoryMediaElement) {
+      return;
+    }
+
+    $activeStoryMediaElement.currentTime = 0;
+    $activeStoryMediaElement.pause();
+
+    if (sharedFile) {
+      isFilePopupOpened = true;
+      return;
+    }
+
+    creatingFileProgress = 0;
+    creatingFileDesc = `Capturing ${activeStory.title}`;
+    const canvas = await createCanvas(container, {
+      ignoredClassNames: ['progresses', 'actions'],
+      ignoredTagNames: ['AUDIO', 'BUTTON', 'VIDEO'],
+      onClone(doc, element) {
+        const style = getComputedStyle(doc.body);
+        const borderColor = style.getPropertyValue('--color-border');
+
+        const wrapper = doc.createElement('div');
+        wrapper.style.margin = 'auto';
+        wrapper.style.transform = 'scale(0.8)';
+        wrapper.style.border = `1px solid ${borderColor}`;
+        wrapper.style.borderRadius = '4px';
+        wrapper.className = element.className;
+
+        element.childNodes.forEach((childNode) => {
+          wrapper.appendChild(childNode);
+        });
+
+        element.appendChild(wrapper);
+
+        const footer = element.getElementsByTagName('footer').item(0);
+        if (footer) {
+          footer.style.display = 'flex';
+        }
+      },
+    });
+
+    creatingFileProgress += 10;
+    creatingFileDesc = `Recording ${activeStory.title}`;
+    const audioStream = getAudioStream($activeStoryMediaElement);
+    const blob = await recordCanvasAndAudioStream({
+      audioStream,
+      canvas,
+      duration: $activeStoryMediaElement.duration,
+      onProgress(progress) {
+        creatingFileProgress = progress;
+      },
+      progressMax: 90,
+      progressMin: creatingFileProgress,
+    });
+
+    if (!blob) {
+      // TODO: handle empty blob
+      return;
+    }
+
+    let mp4Blob: Blob | undefined;
+    try {
+      creatingFileDesc = `Converting ${activeStory.title} video to mp4`;
+      mp4Blob = await convertWebmToMp4(blob, activeSlug);
+      creatingFileProgress = 100;
+    } catch (error) {
+      // TODO: handle error
+      if (dev) {
+        // eslint-disable-next-line no-console
+        console.log('ERROR on converting webm to mp4', error);
+      }
+    }
+
+    creatingFileProgress = null;
+    creatingFileDesc = '';
+    sharedFile = createFile(mp4Blob ?? blob, activeSlug);
+    sharedData = {
+      files: [sharedFile],
+      title: activeStory.title,
+      text: activeStory.title,
+      url: 'https://storyfy.rofi.link',
+    };
+
+    canShare = canShare && navigator?.canShare?.(sharedData);
+    isFilePopupOpened = true;
+  }
+
+  function handleDownload() {
+    if (sharedFile) {
+      downloadBlob(sharedFile, sharedFile.name);
+      isFilePopupOpened = false;
+    }
+  }
+
+  async function handleShare() {
+    if (!sharedFile || !sharedData) return;
+
+    try {
+      await navigator.share(sharedData);
+      isFilePopupOpened = false;
+      return;
+    } catch (error) {
+      // TODO: handle error
+      if (dev) {
+        // eslint-disable-next-line no-console
+        console.log('navigator.share error', error);
+      }
+    }
+
+    downloadBlob(sharedFile, sharedFile.name);
+    isFilePopupOpened = false;
+  }
 </script>
 
-<div class="container">
+<div class="container" class:is-creating-story-file={isCreatingStoryFile}>
   <div class="mask" on:click={goBack} on:keydown={noop} />
 
-  <div class="inner-container">
+  <div class="inner-container" bind:this={container}>
     <header>
       <div class="progresses">
         {#each stories as story (story.slug)}
-          <Progress slug={story.slug} />
+          <StoryProgress slug={story.slug} />
         {/each}
       </div>
 
       <div class="title-and-actions">
         <Title />
-        <div>
+        <div class="actions">
+          {#if isShareable && canDownload}
+            <button on:click={createStoryFile}>
+              {#if canShare}
+                <ShareIcon aria-label="Share" width="20" height="20" viewBox="0 0 24 24" />
+                <VisuallyHidden>Share</VisuallyHidden>
+              {:else}
+                <DownloadIcon aria-label="Download" width="20" height="20" viewBox="0 0 24 24" />
+                <VisuallyHidden>Download</VisuallyHidden>
+              {/if}
+            </button>
+          {/if}
           <AudioToggleButton />
           <CloseButton />
         </div>
@@ -88,14 +256,57 @@
         <InvisibleNavButtons />
       </main>
     {/key}
+
+    <footer>
+      {@html `Made with ${storyfyIconSrc} Storyfy`}
+    </footer>
   </div>
 </div>
+
+<Popup isOpen={isCreatingStoryFile}>
+  {#if isCreatingStoryFile}
+    <Progress label={`Creating file ${activeStory.title}`} value={creatingFileProgress ?? 0} />
+    <p>{creatingFileDesc || 'Creating file'}...</p>
+  {/if}
+</Popup>
+
+<Popup
+  isOpen={isFilePopupOpened && !!sharedFile}
+  on:close={() => {
+    isFilePopupOpened = false;
+  }}
+>
+  {#if sharedFile}
+    <p>Your file is ready: <strong>{sharedFile.name}</strong></p>
+    <div class="file-actions">
+      {#if canShare}
+        <button on:click={handleDownload} class="outline">
+          <DownloadIcon aria-label="Download" viewBox="0 0 24 24" />
+          Download
+        </button>
+        <button on:click={handleShare}>
+          <ShareIcon aria-label="Share" viewBox="0 0 24 24" />
+          Share
+        </button>
+      {:else}
+        <button on:click={handleDownload}>
+          <DownloadIcon aria-label="Download" viewBox="0 0 24 24" />
+          Download
+        </button>
+      {/if}
+    </div>
+  {/if}
+</Popup>
 
 <style lang="scss">
   .container {
     position: relative;
     width: 100%;
     background-color: var(--color-bg-body);
+
+    &.is-creating-story-file {
+      pointer-events: none;
+    }
   }
 
   .mask {
@@ -194,5 +405,26 @@
       width: 33%;
       height: 100%;
     }
+  }
+
+  footer {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    color: var(--color-text-subtle);
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 600;
+    font-style: italic;
+    text-align: right;
+    display: none;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .file-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 </style>

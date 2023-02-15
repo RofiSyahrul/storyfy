@@ -24,6 +24,7 @@
 
 <StoriesLayout
   initialActiveIndex={data.initialActiveIndex}
+  isShareable
   stories={data.topTrackStories}
   buildStoryPathname={buildTopTrackPathname}
   name={HIGHLIGHT_TOP_TRACKS}

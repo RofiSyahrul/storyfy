@@ -15,14 +15,14 @@
     "build:local": "SPOTIFY_REDIRECT_URI=\"http://localhost:4567/callback\" pnpm build",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-    "dev": "pnpm check && vite dev --port 7654",
+    "dev": "pnpm check && vite dev --port 7654 --host",
     "format": "prettier --plugin-search-dir . --write . && eslint . --fix",
     "lint": "prettier --plugin-search-dir . --check . && eslint .",
     "lint:fix": "eslint --fix",
     "lint:fix:all": "eslint . --fix",
     "prepare": "husky install",
     "preview": "vite preview",
-    "preview:local": "SPOTIFY_REDIRECT_URI=\"http://localhost:4567/callback\" pnpm preview --port 4567",
+    "preview:local": "SPOTIFY_REDIRECT_URI=\"http://localhost:4567/callback\" pnpm preview --port 4567 --host",
     "pre-commit": "lint-staged && pnpm test",
     "release": "standard-version",
     "test": "vitest run",
@@ -65,6 +65,8 @@
     ]
   },
   "dependencies": {
-    "dayjs": "1.11.7"
+    "dayjs": "1.11.7",
+    "ffmpeg.js": "4.2.9003",
+    "html2canvas": "1.4.1"
   }
 }

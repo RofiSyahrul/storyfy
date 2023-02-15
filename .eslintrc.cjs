@@ -53,6 +53,10 @@ module.exports = {
       {
         paths: [
           {
+            name: '$lib/client/media/**',
+            message: 'Could only import $lib/client/media',
+          },
+          {
             name: '$lib/server/spotify/**',
             message: 'Could only import $lib/server/spotify',
           },
