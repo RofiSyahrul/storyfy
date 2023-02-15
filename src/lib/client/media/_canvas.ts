@@ -31,7 +31,6 @@ export async function createCanvas(
   }
 
   const canvas = await html2Canvas(element, {
-    allowTaint: true,
     backgroundColor: bgColor,
     ignoreElements(element) {
       if (ignoreElements(element)) return true;

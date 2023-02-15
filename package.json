@@ -11,8 +11,8 @@
     "url": "https://github.com/RofiSyahrul/storyfy.git"
   },
   "scripts": {
-    "build": "pnpm check && vite build",
-    "build:local": "SPOTIFY_REDIRECT_URI=\"http://localhost:4567/callback\" pnpm build",
+    "build": "vite build",
+    "build:local": "SPOTIFY_REDIRECT_URI=\"http://localhost:4567/callback\" NODE_OPTIONS=\"--max_old_space_size=4096\" pnpm build",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "dev": "pnpm check && vite dev --port 7654 --host",

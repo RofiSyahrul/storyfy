@@ -31,7 +31,7 @@
 
 {#if image?.url}
   {@const size = `${MAX_IMAGE_SIZE - (rank - 1) * IMAGE_SIZE_RATIO}px`}
-  <img alt={title} src={image.url} width={size} height={size} />
+  <img alt={title} src={image.url} width={size} height={size} crossorigin="anonymous" />
 {/if}
 
 <a href={trackURL} target="_blank" rel="noopener noreferrer" title="Open in Spotify">
