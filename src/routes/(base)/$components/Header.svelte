@@ -11,10 +11,12 @@
       <h1>Storyfy</h1>
       {#if isLoggedIn}
         <form action="/logout" method="post">
-          <button type="submit">Logout</button>
+          <button type="submit" class="umami--click--logout">Logout</button>
         </form>
       {:else}
-        <a href="/login" class="btn" data-sveltekit-preload-data="off">Login with Spotify</a>
+        <a href="/login" class="btn umami--click--login-header" data-sveltekit-preload-data="off">
+          Login with Spotify
+        </a>
       {/if}
     </div>
   </div>

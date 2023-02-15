@@ -13,7 +13,7 @@
   <div class="title">
     <SpotifyIcon height="24" width="24" />
     <h3>Now Playing</h3>
-    <button on:click|stopPropagation={invalidateAll} title="Refresh">
+    <button on:click|stopPropagation={invalidateAll} title="Refresh" class="umami--click--refresh">
       <RefreshIcon />
       <VisuallyHidden>Refresh</VisuallyHidden>
     </button>

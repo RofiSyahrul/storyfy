@@ -234,7 +234,10 @@
         <Title />
         <div class="actions">
           {#if isShareable && canDownload}
-            <button on:click={createStoryFile}>
+            <button
+              on:click={createStoryFile}
+              class={`umami--click--trigger-${canShare ? 'share' : 'download'}-${activeSlug}`}
+            >
               {#if canShare}
                 <ShareIcon aria-label="Share" width="20" height="20" viewBox="0 0 24 24" />
                 <VisuallyHidden>Share</VisuallyHidden>
@@ -280,16 +283,19 @@
     <p>Your file is ready: <strong>{sharedFile.name}</strong></p>
     <div class="file-actions">
       {#if canShare}
-        <button on:click={handleDownload} class="outline">
+        <button
+          on:click={handleDownload}
+          class={`outline umami--click--download-outline-${activeSlug}`}
+        >
           <DownloadIcon aria-label="Download" viewBox="0 0 24 24" />
           Download
         </button>
-        <button on:click={handleShare}>
+        <button on:click={handleShare} class={`umami--click--share-${activeSlug}`}>
           <ShareIcon aria-label="Share" viewBox="0 0 24 24" />
           Share
         </button>
       {:else}
-        <button on:click={handleDownload}>
+        <button on:click={handleDownload} class={`umami--click--download-${activeSlug}`}>
           <DownloadIcon aria-label="Download" viewBox="0 0 24 24" />
           Download
         </button>

@@ -2,7 +2,9 @@
   import '../app.css';
   import { onMount } from 'svelte';
 
+  import { dev } from '$app/environment';
   import { page } from '$app/stores';
+  import { PUBLIC_ANALYTICS_WEB_ID } from '$env/static/public';
   import { createPortal } from '$lib/actions/portal';
   import { setIsInternalRouting } from '$lib/client/storage/internal-routing';
   import { initUserProfileStore } from '$lib/store/user-profile';
@@ -69,6 +71,16 @@
 
   {#if shouldBlockSearchIndex}
     <meta name="robots" content="noindex" />
+  {/if}
+
+  {#if !dev}
+    <svelte:element
+      this="script"
+      async
+      defer
+      data-website-id={PUBLIC_ANALYTICS_WEB_ID}
+      src="https://umami.rofisyahrul.com/umami.js"
+    />
   {/if}
 </svelte:head>
 
