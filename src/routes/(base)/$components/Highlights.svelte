@@ -22,7 +22,7 @@
   };
 </script>
 
-<ul>
+<ul data-sveltekit-reload data-sveltekit-preload-data="off">
   {#each highlightNames as name (name)}
     {@const { label, pathname } = highlights[name]}
     <li>
